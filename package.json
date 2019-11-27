@@ -1,11 +1,31 @@
 {
-  "name": "auctionbot",
+  "name": "logtodiscord",
   "version": "1.0.0",
-  "description": "Watches Everquest log and outputs matching entries to Discord",
+  "description": "",
   "main": "index.js",
+  "dependencies": {
+    "@types/express": "^4.16.0",
+    "express": "^4.16.3",
+    "tail": "^2.0.3",
+    "ts-node-dev": "^1.0.0-pre.30",
+    "typescript": "^3.1.1"
+  },
+  "devDependencies": {
+    "@types/tail": "^2.0.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "tsc": "tsc",
+    "dev": "ts-node-dev --respawn --transpileOnly ./app/app.ts",
+    "prod": "tsc && node ./build/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abbail/logtodiscord"
   },
   "author": "",
-  "license": "MIT"
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/abbail/logtodiscord/issues"
+  },
+  "homepage": "https://github.com/abbail/logtodiscord#readme"
 }
