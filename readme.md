@@ -6,6 +6,8 @@ To install this project's dependencies use:
 ```
 npm install
 ```
+Edit app.ts and add your bot's token
+```
 To run ther server in development mode:
 ```
 npm run dev
