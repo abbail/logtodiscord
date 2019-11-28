@@ -2,11 +2,11 @@
 Simple project for watching a log file and printing matching entries to a Discord channel
 
 ## Quick Start
+Edit app.ts and add your bot's token
+
 To install this project's dependencies use:
 ```
 npm install
-```
-Edit app.ts and add your bot's token
 ```
 To run ther server in development mode:
 ```
