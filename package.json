@@ -5,13 +5,15 @@
   "main": "index.js",
   "dependencies": {
     "@types/express": "^4.16.0",
+    "chokidar": "^3.3.0",
     "express": "^4.16.3",
-    "tail": "^2.0.3",
+    "read-last-lines": "^1.7.1",
+    "rxjs": "^6.5.3",
     "ts-node-dev": "^1.0.0-pre.30",
     "typescript": "^3.1.1"
   },
   "devDependencies": {
-    "@types/tail": "^2.0.0"
+    "@types/node": "^12.12.14"
   },
   "scripts": {
     "tsc": "tsc",
