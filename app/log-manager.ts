@@ -4,19 +4,27 @@ import { Subject } from 'rxjs';
 import { LogEntry } from './log-entry';
 
 export class LogManager {
+    // 512 is plenty
     private bufferSize = 512;
+    // for storing file reads
     private buffer: Buffer;
+    // acctual file watcher
     private watcher: FSWatcher;
     
+    // for subscribing to in order to see log entries in real time
     public logStream: Subject<LogEntry> = new Subject<LogEntry>();
 
     constructor (filePath: string) {
+        // init the file change watcher for the correct path
         this.watcher = chokidar.watch(filePath, { persistent: true });
+        // allocate the buffer for file reads later
         this.buffer = Buffer.alloc(this.bufferSize);
+        // start watching for file changes
         this.watcher.on('change', (fileName: string) => this.handleFileChange(fileName));
     }
     
     private handleNewLogLine(logLine: string) {
+        // send the log entry to everyone who is subscribed
         this.logStream.next(new LogEntry(logLine));
     }
 
