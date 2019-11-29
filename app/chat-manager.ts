@@ -1,9 +1,5 @@
-import { Client, TextChannel, RichEmbed, Message } from 'discord.js';
-import { Auction, AuctionType } from './auction';
-import { LogEntry } from './log-entry';
-import { Observable } from 'rxjs';
-import { AuctionWatcher } from './auction-watcher';
-import { Watch } from './watch';
+import { Client, TextChannel, Message } from 'discord.js';
+import { DiscordDecoder } from './discord-decoder';
 
 export class ChatManager {
     // discord.js client
@@ -16,33 +12,46 @@ export class ChatManager {
         this.client.login(token);
     }
 
-    broadcastRichEmbedMessage(richEmbed: RichEmbed, watchMatches: Watch[]) {
-        // for every channel the bot is in
-        this.client.channels.tap((channel, key, collection)=>{
-            let mentions = 'Watched items mentioned in above auction\n';
-            for(const match of watchMatches) {
-                mentions += '<@' + match.discordId + '> ' + match.watchText;
+    handleMessage(message: Message) {
+        // ignore your own messages
+        if (message.author.id !== this.client.user.id) {
+            let watch = null;
+            try {
+                watch = DiscordDecoder.messageToWatch(message);
+            } catch (errorText) {
+                console.error(errorText);
+                this.sendMessage(message.channel as TextChannel, errorText);
+                return;
             }
 
-            // if the channel is a TextChannel
-            if (channel instanceof TextChannel) {
-                // send the message
-                channel.send(richEmbed);
-                if (watchMatches.length > 0) {
-                    channel.send(mentions);
-                }
+            if (DiscordDecoder.isWatch(message.content)) {
+                console.debug('Subscribing ' + watch.name + ' to ' + watch.watchText);
+                this.sendMessage(message.channel as TextChannel, 'Subscribing <@' + watch.discordId + '> to ' + watch.watchText)
+                return watch;
+            } else if (DiscordDecoder.isUnwatch(message.content)) {
+                console.debug('Unsubscribed ' + watch.name + ' from ' + watch.watchText);
+                this.sendMessage(message.channel as TextChannel, 'Unsubscribed <@' + watch.discordId + '> from ' + watch.watchText)
+                watch.negated = true;
+                return watch;
+            } else {
+                console.debug('Discord message seen that didn\'t look like a watch.');
             }
-        });
+        }
     }
     
     broadcastMessage(message: string) {
         // for every channel the bot is in
-        this.client.channels.tap((channel, key, collection)=>{
+        this.client.channels.tap((channel)=>{
             // if the channel is a TextChannel
             if (channel instanceof TextChannel) {
                 // send the message
-                channel.send(message);
+                this.sendMessage(channel, message);
             }
         });
+    }
+
+    sendMessage(channel: TextChannel, message: string) {
+        // send a message to a channel
+        channel.send(message);
     }
 }

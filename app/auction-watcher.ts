@@ -1,38 +1,29 @@
-import { Database } from "sqlite3";
 import { Watch } from "./watch";
-import { resolve } from "path";
 import { Observable } from "rxjs";
 import { LogEntry } from "./log-entry";
-import { Auction, AuctionType } from "./auction";
-import { RichEmbed } from "discord.js";
+import { Auction } from "./auction";
 import { ChatManager } from "./chat-manager";
+import { SQLManager } from "./sql-manager";
 
 export class AuctionWatcher {
-    private database: Database
-    public watches: Watch[] = [];
-    constructor(databasePath: string, private logStream: Observable<LogEntry>, private chatManager: ChatManager) {
-        this.database = new Database(resolve(databasePath));
-        this.refreshWatchList();
-
+    constructor(private sqlManager: SQLManager, private logStream: Observable<LogEntry>, private chatManager: ChatManager) {
         // subscribe to the ready event
         this.chatManager.client.on('ready', () => {
             // when logged in
             console.debug('Logged in as', this.chatManager.client.user.tag);
-
             // begin watching the log stream
             this.watchLogStream();
         });
-    }
 
-    refreshWatchList() {
-        this.database.serialize(() => {
-            this.watches.slice();
-            this.database.each("SELECT name, discordId, watchedText, type FROM auctionWatches", (err, row) => {
-                this.watches.push(new Watch(row.discordId, row.name, row.watchedText, row.type));
-            });
+        // subscribe to messages
+        this.chatManager.client.on('message', message => {
+            const watch = this.chatManager.handleMessage(message);
+            if (watch && !watch.negated) {
+                this.sqlManager.addWatch(watch);
+            } else if (watch && watch.negated) {
+                this.sqlManager.removeWatch(watch);
+            }
         });
-
-        this.database.close();
     }
 
     private watchLogStream() {
@@ -62,6 +53,6 @@ export class AuctionWatcher {
     }
 
     getMatchingWatches(auction: Auction) {
-        return this.watches.filter(watch => auction.body.indexOf(watch.watchText) !== -1 && auction.type == watch.type);
+        return this.sqlManager.watches.filter(watch => auction.body.indexOf(watch.watchText) !== -1 && auction.type == watch.type);
     }
 }
