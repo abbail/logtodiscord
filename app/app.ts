@@ -2,10 +2,12 @@ import { LogManager } from './log-manager'
 import { Auction, AuctionType } from './auction';
 import { Client, TextChannel, RichEmbed } from 'discord.js';
 
-const fileToWatch = 'C:/Program Files (x86)/Sony/EverQuest/Logs/eqlog_Sprout_P1999Green.txt';
-const logManager: LogManager = new LogManager(fileToWatch);
+const config = require('../config.json');
+
+const logManager: LogManager = new LogManager(config.logFilePath);
 const client = new Client();
-client.login('token goes here');
+
+client.login(config.token);
 
 client.on('ready', () => {
   console.log('Logged in as', client.user.tag);

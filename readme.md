@@ -2,7 +2,7 @@
 Simple project for watching a log file and printing matching entries to a Discord channel
 
 ## Quick Start
-Edit app.ts and add your bot's token
+Edit config.json and enter your discord bot token as well as the path to your Everquest log file
 
 To install this project's dependencies use:
 ```

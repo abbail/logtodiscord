@@ -1,0 +1,4 @@
+{
+    "token": "put your token here",
+    "logFilePath": "/path/to/your/log.txt"
+}
