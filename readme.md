@@ -2,7 +2,7 @@
 Simple project for watching a log file and printing matching entries to a Discord channel
 
 ## Quick Start
-Edit config.json and enter your discord bot token as well as the path to your Everquest log file
+Rename config.example.json to config.json.  Then enter your discord bot token and the path to your Everquest log file into config.json
 
 To install this project's dependencies use:
 ```
