@@ -49,5 +49,8 @@ export class Auction extends LogEntry {
 }
 
 export enum AuctionType {
-    Buy, Sell, Both, Other
+    Buy = 0,
+    Sell = 1,
+    Both = 2,
+    Other = 3
 }

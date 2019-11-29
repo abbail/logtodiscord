@@ -1,4 +1,5 @@
 {
     "token": "putYourTokenHere",
-    "logFilePath": "C:/Program Files (x86)/Sony/EverQuest/Logs/eqlog_Character_P1999Green.txt"
+    "logFilePath": "C:/Program Files (x86)/Sony/EverQuest/Logs/eqlog_Character_P1999Green.txt",
+    "sqlite3DBPath": "./sqlite3/data.db"
 }
