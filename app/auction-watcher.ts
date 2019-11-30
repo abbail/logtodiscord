@@ -46,7 +46,7 @@ export class AuctionWatcher {
 
         message += auction.body + '\n';
         for(const match of this.getMatchingWatches(auction)) {
-            message += '<@' + match.discordId + '>';
+            message += '<@' + match.discordId + '> I found \'' + match.watchText + '\'\n';
         }
 
         this.chatManager.broadcastMessage(message);

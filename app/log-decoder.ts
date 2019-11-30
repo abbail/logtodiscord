@@ -45,7 +45,8 @@ export class LogDecoder {
                 throw 'Corrput Auction Log Entry';
             }
             auctionPieces.auctioneer = matches[1];
-            auctionPieces.body = matches[2];
+            // replace people's ||s so they don't trigger spoiler notation
+            auctionPieces.body = matches[2].replace('||', ',');
             auctionPieces.type = this.getAuctionType(message);
         } else {
             console.error(message);
