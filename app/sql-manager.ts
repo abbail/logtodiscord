@@ -13,7 +13,8 @@ export class SQLManager {
 
     private refreshWatchList() {
         this.database.serialize(() => {
-            this.watches.slice();
+            this.watches = [];
+
             this.database.each("SELECT name, discordId, watchedText, type FROM auctionWatches", (err, row) => {
                 this.watches.push(new Watch(row.discordId, row.name, row.watchedText, row.type));
             });
