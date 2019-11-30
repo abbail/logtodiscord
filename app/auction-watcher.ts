@@ -45,7 +45,8 @@ export class AuctionWatcher {
         console.debug(auction.auctioneer, '-', auction.body);
 
         // the general auction announce
-        const message = this.getRichEmbedForAuction(auction);
+        // const message = this.getRichEmbedForAuction(auction);
+        const message = this.getTextForAuction(auction);
         this.chatManager.broadcastMessage(message);
 
         // notify all the watchers
@@ -59,6 +60,10 @@ export class AuctionWatcher {
 
     getMatchingWatches(auction: Auction) {
         return this.sqlManager.watches.filter(watch => auction.body.indexOf(watch.watchText) !== -1 && auction.type == watch.type);
+    }
+
+    getTextForAuction(auction: Auction) {
+        return '__**' + auction.auctioneer + '**__ - "' + auction.body + '"';
     }
 
     getRichEmbedForAuction(auction: Auction) {
