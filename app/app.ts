@@ -2,8 +2,7 @@ import { LogManager } from './log-manager'
 import { ChatManager } from './chat-manager';
 import { AuctionWatcher } from './auction-watcher';
 import { SQLManager } from './sql-manager';
-
-const config = require('../config.json');
+import config from '../config.json';
 
 const chatManager: ChatManager = new ChatManager(
     config.token
