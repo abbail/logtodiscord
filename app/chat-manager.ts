@@ -1,4 +1,4 @@
-import { Client, TextChannel, Message } from 'discord.js';
+import { Client, TextChannel, Message, RichEmbed } from 'discord.js';
 import { DiscordDecoder } from './discord-decoder';
 
 export class ChatManager {
@@ -20,17 +20,17 @@ export class ChatManager {
                 watch = DiscordDecoder.messageToWatch(message);
             } catch (errorText) {
                 console.error(errorText);
-                this.sendMessage(message.channel as TextChannel, errorText);
+                this.sendChannelMessage(message.channel as TextChannel, errorText);
                 return;
             }
 
             if (DiscordDecoder.isWatch(message.content)) {
                 console.debug('Subscribing ' + watch.name + ' to ' + watch.watchText);
-                this.sendMessage(message.channel as TextChannel, 'Subscribing <@' + watch.discordId + '> to ' + watch.watchText)
+                this.sendUserMessage(watch.discordId, 'Subscribing you to ' + watch.watchText)
                 return watch;
             } else if (DiscordDecoder.isUnwatch(message.content)) {
                 console.debug('Unsubscribed ' + watch.name + ' from ' + watch.watchText);
-                this.sendMessage(message.channel as TextChannel, 'Unsubscribed <@' + watch.discordId + '> from ' + watch.watchText)
+                this.sendUserMessage(watch.discordId, 'Unsubscribed you from ' + watch.watchText)
                 watch.negated = true;
                 return watch;
             } else {
@@ -39,19 +39,30 @@ export class ChatManager {
         }
     }
     
-    broadcastMessage(message: string) {
+    broadcastMessage(message: string | RichEmbed) {
         // for every channel the bot is in
         this.client.channels.tap((channel)=>{
             // if the channel is a TextChannel
             if (channel instanceof TextChannel) {
                 // send the message
-                this.sendMessage(channel, message);
+                this.client.user.sendMessage
+                this.sendChannelMessage(channel, message);
             }
         });
     }
 
-    sendMessage(channel: TextChannel, message: string) {
+    sendChannelMessage(channel: TextChannel, message: string | RichEmbed) {
         // send a message to a channel
         channel.send(message);
+    }
+
+    sendUserMessage(discordId: string, message: string | RichEmbed) {
+        this.client.fetchUser(discordId, true).then(user => {
+            if(message instanceof RichEmbed) {
+                user.sendEmbed(message);
+            } else {
+                user.sendMessage(message);
+            }
+        });
     }
 }
