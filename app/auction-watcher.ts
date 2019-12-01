@@ -33,10 +33,15 @@ export class AuctionWatcher {
         this.logStream.subscribe((logLine) => {
             // if the log entry is an auction
             if (logLine.isAuction) {
-                // make an auction object out of it
-                const auction = new Auction(logLine.logLine);
-                // and process it
-                this.handleGeneralAuction(auction);
+                // wrapping this in a try since a blank auction won't parse, etc
+                try {
+                    // make an auction object out of it
+                    const auction = new Auction(logLine.logLine);
+                    // and process it
+                    this.handleGeneralAuction(auction);
+                } catch (e) {
+                    // do nothing, skip the auction and move on
+                }
             } 
         });
     }
