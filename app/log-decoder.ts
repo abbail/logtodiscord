@@ -9,9 +9,9 @@ export class LogDecoder {
     // used to break an auction into its pieces
     private static auctionRegExp: RegExp = /^\[[^\]]+\]\s([A-Za-z]+)\sauctions,\s'(.+)'/i;
     // used to detect auction type (sell)
-    static sellingRegExp: RegExp = /(?:WTS)|(?:sell)|(?:selling)/i
+    static sellingRegExp: RegExp = /(?:WTS)|(?:sell)|(?:selling)/i;
     // used to detect auction type (buy)
-    static buyingRegExp: RegExp = /(?:WTB)|(?:buy)|(?:buying)/i
+    static buyingRegExp: RegExp = /(?:WTB)|(?:buy)|(?:buying)/i;
 
     public static isAuction(message: string) {
         return this.auctionDetectionRegex.test(message);
@@ -27,7 +27,7 @@ export class LogDecoder {
         } else {
             // something went wrong
             console.error(message);
-            throw 'Invalid Log Line';
+            throw new Error('Invalid Log Line');
         }
     }
 
@@ -42,7 +42,7 @@ export class LogDecoder {
         if (matches !== null) {
             if (matches.length < 3) {
                 console.error(message);
-                throw 'Corrput Auction Log Entry';
+                throw new Error('Corrput Auction Log Entry');
             }
             auctionPieces.auctioneer = matches[1];
             // replace people's ||s so they don't trigger spoiler notation
@@ -50,7 +50,7 @@ export class LogDecoder {
             auctionPieces.type = this.getAuctionType(message);
         } else {
             console.error(message);
-            throw 'Invalid Auction Log Entry';
+            throw new Error('Invalid Auction Log Entry');
         }
         return auctionPieces;
     }
@@ -67,9 +67,9 @@ export class LogDecoder {
         if (this.sellingRegExp.test(message)) {
             auctionType = AuctionType.Sell;
         }
-        
+
         // it is both a buy and a sell
-        if (wasBuy && auctionType == AuctionType.Sell) {
+        if (wasBuy && auctionType === AuctionType.Sell) {
             auctionType = AuctionType.Both;
         }
 

@@ -10,7 +10,7 @@ export class LogManager {
     private buffer: Buffer;
     // acctual file watcher
     private watcher: FSWatcher;
-    
+
     // for subscribing to in order to see log entries in real time
     public logStream: Subject<LogEntry> = new Subject<LogEntry>();
 
@@ -22,7 +22,7 @@ export class LogManager {
         // start watching for file changes
         this.watcher.on('change', (fileName: string) => this.handleFileChange(fileName));
     }
-    
+
     private handleNewLogLine(logLine: string) {
         // send the log entry to everyone who is subscribed
         this.logStream.next(new LogEntry(logLine));

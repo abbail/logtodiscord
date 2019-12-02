@@ -22,14 +22,14 @@ export class SQLManager {
     }
 
     getWatchByDiscordId(discordId: string) {
-        const promise = new Promise<Watch[]>((resolve) => {
+        const promise = new Promise<Watch[]>((resolvePromise) => {
             const userWatches: Watch[] = [];
             this.database.serialize(() => {
                 this.database.all("SELECT name, discordId, watchedText, type FROM auctionWatches WHERE discordId = ?", discordId, (err, rows) => {
                     for (const row of rows) {
                         userWatches.push(new Watch(row.discordId, row.name, row.watchedText, row.type));
                     }
-                    resolve(userWatches);
+                    resolvePromise(userWatches);
                 });
             });
         });
@@ -39,19 +39,19 @@ export class SQLManager {
 
     addWatch(watch: Watch) {
         this.database.serialize(() => {
-            var stmt = this.database.prepare("INSERT INTO auctionWatches VALUES (?, ?, ?, ?)");
-            stmt.run(watch.name, watch.discordId, watch.watchText, watch.type);
-            stmt.finalize();
+            const statement = this.database.prepare("INSERT INTO auctionWatches VALUES (?, ?, ?, ?)");
+            statement.run(watch.name, watch.discordId, watch.watchText, watch.type);
+            statement.finalize();
 
             this.refreshWatchList();
         });
     }
-       
+
     removeWatch(watch: Watch) {
         this.database.serialize(() => {
-            var stmt = this.database.prepare("DELETE FROM auctionWatches WHERE discordId=? AND watchedText=? AND type=?");
-            stmt.run(watch.discordId, watch.watchText, watch.type);
-            stmt.finalize();
+            const statement = this.database.prepare("DELETE FROM auctionWatches WHERE discordId=? AND watchedText=? AND type=?");
+            statement.run(watch.discordId, watch.watchText, watch.type);
+            statement.finalize();
 
             this.refreshWatchList();
         });

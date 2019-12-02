@@ -1,10 +1,10 @@
-import { Observable } from "rxjs";
-import { LogEntry } from "./log-entry";
-import { Auction } from "./auction";
-import { ChatManager } from "./chat-manager";
-import { SQLManager } from "./sql-manager";
-import { RichEmbed } from "discord.js";
-import { AuctionType } from "./models/auction-type";
+import { Observable } from 'rxjs';
+import { LogEntry } from './log-entry';
+import { Auction } from './auction';
+import { ChatManager } from './chat-manager';
+import { SQLManager } from './sql-manager';
+import { RichEmbed } from 'discord.js';
+import { AuctionType } from './models/auction-type';
 
 export class AuctionWatcher {
     constructor(private sqlManager: SQLManager, private logStream: Observable<LogEntry>, private chatManager: ChatManager) {
@@ -41,7 +41,7 @@ export class AuctionWatcher {
                 } catch (e) {
                     // do nothing, skip the auction and move on
                 }
-            } 
+            }
         });
     }
 
@@ -54,16 +54,16 @@ export class AuctionWatcher {
         this.chatManager.broadcastMessage(message);
 
         // notify all the watchers
-        for(const match of this.getMatchingWatches(auction)) { 
-            const message = this.getRichEmbedForAuction(auction);
-            message.addField('Found match', match.watchText);
-            this.chatManager.sendUserMessage(match.discordId, message);
+        for (const match of this.getMatchingWatches(auction)) {
+            const responseMessage = this.getRichEmbedForAuction(auction);
+            responseMessage.addField('Found match', match.watchText);
+            this.chatManager.sendUserMessage(match.discordId, responseMessage);
         }
 
     }
 
     getMatchingWatches(auction: Auction) {
-        return this.sqlManager.watches.filter(watch => auction.body.indexOf(watch.watchText) !== -1 && auction.type == watch.type);
+        return this.sqlManager.watches.filter(watch => auction.body.indexOf(watch.watchText) !== -1 && auction.type === watch.type);
     }
 
     getTextForAuction(auction: Auction) {
@@ -86,17 +86,17 @@ export class AuctionWatcher {
 
     getColorForAuction(auction: Auction) {
         // color by auction type
-        switch(auction.type) {
+        switch (auction.type) {
             case AuctionType.Buy:
-            return 0x5555FF;
+                return 0x5555FF;
             case AuctionType.Sell:
-            return 0x55FF55;
+                return 0x55FF55;
             case AuctionType.Both:
-            return 0x22FFFF;
+                return 0x22FFFF;
             case AuctionType.Other:
-            return 0x555555;
+                return 0x555555;
             default:
-            return 0xFF0000;
+                return 0xFF0000;
         }
     }
 }

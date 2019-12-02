@@ -10,6 +10,6 @@ export class Auction extends LogEntry implements AuctionPieces {
 
     constructor(logLine: string) {
         super(logLine);
-        Object.assign(this, LogDecoder.getAuctionPieces(logLine))
+        Object.assign(this, LogDecoder.getAuctionPieces(logLine));
     }
 }

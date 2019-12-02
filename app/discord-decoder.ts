@@ -6,7 +6,7 @@ import { AuctionType } from "./models/auction-type";
 export class DiscordDecoder {
     // used to detech the type of message we received (watch)
     private static watchRegExp: RegExp = /^watch\s/i;
-    private static listWatchRegExp: RegExp = /^list watch$/i
+    private static listWatchRegExp: RegExp = /^list watch$/i;
     private static unwatchRegExp: RegExp = /^unwatch\s/i;
     private static watchStringRegExp: RegExp = /^(?:watch|unwatch)\s(?:WTS|sell|selling|WTB|buy|buying)\s(.+)$/i;
 
@@ -43,7 +43,7 @@ export class DiscordDecoder {
             return null;
         }
     }
-    
+
     public static isWatch(message: string) {
         return this.watchRegExp.test(message);
     }
@@ -51,7 +51,7 @@ export class DiscordDecoder {
     public static isListWatch(message: string) {
         return this.listWatchRegExp.test(message);
     }
-        
+
     public static isUnwatch(message: string) {
         return this.unwatchRegExp.test(message);
     }

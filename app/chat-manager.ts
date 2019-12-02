@@ -68,7 +68,7 @@ export class ChatManager {
         watch.negated = true;
         return watch;
     }
-    
+
     broadcastMessage(message: string | RichEmbed) {
         // for every channel the bot is in
         this.client.channels.tap((channel)=>{
