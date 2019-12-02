@@ -6,6 +6,7 @@ import { AuctionType } from "./models/auction-type";
 export class DiscordDecoder {
     // used to detech the type of message we received (watch)
     private static watchRegExp: RegExp = /^watch\s/i;
+    private static listWatchRegExp: RegExp = /^list watch$/i
     private static unwatchRegExp: RegExp = /^unwatch\s/i;
     private static watchStringRegExp: RegExp = /^(?:watch|unwatch)\s(?:WTS|sell|selling|WTB|buy|buying)\s(.+)$/i;
 
@@ -18,10 +19,15 @@ export class DiscordDecoder {
         } else {
             // something went wrong
             console.error(message.content);
-            throw 'Invalid watch statement (missing watch type).  Example watch:\nwatch **WTS** Stein of Maggok';
+            return null;
         }
 
-        return new Watch(message.author.id, message.author.username, this.getWatchString(message.content), type);
+        const watchString = this.getWatchString(message.content);
+        if (watchString === null) {
+            return null;
+        }
+
+        return new Watch(message.author.id, message.author.username, watchString, type);
     }
 
     public static getWatchString(message: string) {
@@ -34,12 +40,16 @@ export class DiscordDecoder {
         } else {
             // something went wrong
             console.error(message);
-            throw 'Invalid watch statement (not enough arguments).  Example watch:\nwatch WTS **Stein of Maggok**';
+            return null;
         }
     }
     
     public static isWatch(message: string) {
         return this.watchRegExp.test(message);
+    }
+
+    public static isListWatch(message: string) {
+        return this.listWatchRegExp.test(message);
     }
         
     public static isUnwatch(message: string) {

@@ -4,8 +4,7 @@ import { AuctionWatcher } from './auction-watcher';
 import { SQLManager } from './sql-manager';
 import config from '../config.json';
 
-const chatManager: ChatManager = new ChatManager(
-    config.token
-);
-
-const auctionWatcher: AuctionWatcher = new AuctionWatcher(new SQLManager(config.sqlite3DBPath), new LogManager(config.logFilePath).logStream, chatManager);
+const sqlManager = new SQLManager(config.sqlite3DBPath);
+const logManager = new LogManager(config.logFilePath).logStream;
+const chatManager: ChatManager = new ChatManager(config.token, sqlManager);
+const auctionWatcher: AuctionWatcher = new AuctionWatcher(sqlManager, logManager, chatManager);

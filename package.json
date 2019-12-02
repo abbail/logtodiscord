@@ -13,13 +13,16 @@
     "rxjs": "^6.5.3",
     "sqlite3": "^4.1.0",
     "ts-node-dev": "^1.0.0-pre.30",
-    "typescript": "^3.1.1"
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.2"
   },
   "devDependencies": {
+    "tslint-config-standard": "^8.0.0",
     "@types/node": "^12.12.14"
   },
   "scripts": {
     "tsc": "tsc",
+    "lint": "tslint --project tsconfig.json",
     "dev": "ts-node-dev --respawn --transpileOnly ./app/app.ts",
     "prod": "tsc && node ./build/app.js"
   },

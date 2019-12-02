@@ -1,4 +1,3 @@
-import { Watch } from "./watch";
 import { Observable } from "rxjs";
 import { LogEntry } from "./log-entry";
 import { Auction } from "./auction";
@@ -24,7 +23,7 @@ export class AuctionWatcher {
                 this.sqlManager.addWatch(watch);
             } else if (watch && watch.negated) {
                 this.sqlManager.removeWatch(watch);
-            }
+            } // else it was handled in the processor
         });
     }
 

@@ -21,6 +21,22 @@ export class SQLManager {
         });
     }
 
+    getWatchByDiscordId(discordId: string) {
+        const promise = new Promise<Watch[]>((resolve) => {
+            const userWatches: Watch[] = [];
+            this.database.serialize(() => {
+                this.database.all("SELECT name, discordId, watchedText, type FROM auctionWatches WHERE discordId = ?", discordId, (err, rows) => {
+                    for (const row of rows) {
+                        userWatches.push(new Watch(row.discordId, row.name, row.watchedText, row.type));
+                    }
+                    resolve(userWatches);
+                });
+            });
+        });
+
+        return promise;
+    }
+
     addWatch(watch: Watch) {
         this.database.serialize(() => {
             var stmt = this.database.prepare("INSERT INTO auctionWatches VALUES (?, ?, ?, ?)");
