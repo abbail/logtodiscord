@@ -1,5 +1,5 @@
 # About
-Simple project for watching a, Everquest log file and sending matching auction entries to Discord.
+Simple project for watching an Everquest log file and sending matching auction entries to Discord.
 
 ## Quick Start
 Rename or copy config.example.json to config.json.  Then enter your discord bot token and the path to your Everquest log file into config.json
