@@ -1,13 +1,14 @@
 import { Database } from "sqlite3";
 import { resolve } from "path";
 import { Watch } from "./watch";
+import { Bootstrap } from "./bootstrap";
 
 export class SQLManager {
     private database: Database;
     public watches: Watch[] = [];
 
-    constructor(databasePath: string) {
-        this.database = new Database(resolve(databasePath));
+    constructor() {
+        this.database = new Database(resolve(Bootstrap.databasePath));
         this.refreshWatchList();
     }
 

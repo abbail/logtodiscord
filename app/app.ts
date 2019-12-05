@@ -3,8 +3,11 @@ import { ChatManager } from './chat-manager';
 import { AuctionWatcher } from './auction-watcher';
 import { SQLManager } from './sql-manager';
 import config from '../config.json';
+import { Bootstrap } from './bootstrap';
 
-const sqlManager = new SQLManager(config.sqlite3DBPath);
+const boostrap = new Bootstrap();
+
+const sqlManager = new SQLManager();
 const logManager = new LogManager(config.logFilePath);
 const chatManager: ChatManager = new ChatManager(config.token, sqlManager);
 const auctionWatcher: AuctionWatcher = new AuctionWatcher(sqlManager, logManager.logStream, chatManager);
