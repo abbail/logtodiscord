@@ -21,6 +21,22 @@ export class SQLManager {
         });
     }
 
+    getItems() {
+        const promise = new Promise<string[]>((resolvePromise) => {
+            const items: string[] = [];
+            this.database.serialize(() => {
+                this.database.all("SELECT name FROM items", (err, rows) => {
+                    for (const row of rows) {
+                        items.push(row.name);
+                    }
+                    resolvePromise(items);
+                });
+            });
+        });
+
+        return promise;
+    }
+
     getWatchByDiscordId(discordId: string) {
         const promise = new Promise<Watch[]>((resolvePromise) => {
             const userWatches: Watch[] = [];
