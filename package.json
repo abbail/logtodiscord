@@ -25,7 +25,8 @@
     "tsc": "tsc",
     "lint": "tslint --project tsconfig.json",
     "dev": "ts-node-dev --respawn --transpileOnly ./app/app.ts",
-    "prod": "tsc && node ./build/app.js"
+    "copy:database": "copy .\\app\\data.db .\\build\\app\\data.db",
+    "prod": "tsc && npm run copy:database && node ./build/app/app.js"
   },
   "repository": {
     "type": "git",
