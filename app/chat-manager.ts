@@ -87,11 +87,7 @@ export class ChatManager {
 
     sendUserMessage(discordId: string, message: string | RichEmbed) {
         this.client.fetchUser(discordId, true).then(user => {
-            if(message instanceof RichEmbed) {
-                user.sendEmbed(message);
-            } else {
-                user.send(message);
-            }
+            user.send(message);
         });
     }
 
