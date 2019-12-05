@@ -23,7 +23,7 @@ export class LogManager {
         this.watcher.on('change', (fileName: string) => this.handleFileChange(fileName));
     }
 
-    private handleNewLogLine(logLine: string) {
+    public handleNewLogLine(logLine: string) {
         // send the log entry to everyone who is subscribed
         this.logStream.next(new LogEntry(logLine));
     }
