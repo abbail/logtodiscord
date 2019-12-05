@@ -75,7 +75,7 @@ export class AuctionWatcher {
     }
 
     getTextForAuction(auction: Auction) {
-        return `__**${auction.auctioneer}**__ - "${this.markupItems(auction.body)}"`;
+        return `__**${auction.auctioneer}**__ - "${auction.body}"`;
     }
 
     markupItems(body: string) {
