@@ -105,3 +105,4 @@ dist
 
 # Private settings
 config.json
+data.db
