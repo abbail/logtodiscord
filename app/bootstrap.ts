@@ -48,6 +48,7 @@ export class Bootstrap {
     insertItems() {
         this.database.serialize(() => {
             const statement = this.database.prepare("INSERT INTO items VALUES (?)");
+            // TODO: eventually this should use the pristine database since we are shipping this data twice
             createReadStream('app/items.csv').pipe(csv())
             .on('data', (row: any) => {
                 statement.run(row.name);
