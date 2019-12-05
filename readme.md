@@ -16,3 +16,19 @@ To run ther server in production mode:
 ```
 npm run prod
 ```
+## Bot Commands
+The bot will respond to messages either in the chat channel or in a direct message.  These commands are not case sensitive.
+
+To have the bot send you a message when it sees an item in an auction use:
+```
+watch WTS Stein of Maggok
+watch WTB deathfist slashed belt
+```
+Similarly to remove a watched auction use:
+```
+unwatch WTS Golden Efreeti Boots
+```
+To list all items that you are currently watching for use:
+```
+list watch
+```
