@@ -8,7 +8,7 @@ export class SQLManager {
     public watches: Watch[] = [];
 
     constructor() {
-        this.database = new Database(resolve(Bootstrap.databasePath));
+        this.database = new Database(Bootstrap.databasePath);
         this.refreshWatchList();
     }
 

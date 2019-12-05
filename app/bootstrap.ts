@@ -1,12 +1,13 @@
 import { Database } from "sqlite3";
 import { resolve } from "path";
-import { createReadStream, existsSync, copyFileSync, open } from 'fs';
+import { createReadStream, existsSync, copyFileSync } from 'fs';
+import * as fs from 'fs';
 import csv from 'csv-parser';
 
 export class Bootstrap {
     private database: Database;
-    public static readonly pristineDatabaseLocation = 'app/data-pristine.db';
-    public static readonly databasePath = 'app/data.db';
+    public static readonly pristineDatabaseLocation = resolve(__dirname, 'data-pristine.db');
+    public static readonly databasePath = resolve(__dirname, 'data.db');
 
     constructor() {
         this.installDatabase();
@@ -17,9 +18,9 @@ export class Bootstrap {
     }
 
     installDatabase() {
-        if (!existsSync(resolve(Bootstrap.databasePath))) {
+        if (!existsSync(Bootstrap.databasePath)) {
             console.log('User database doesn\'t exist.  Using the pristine database.');
-            copyFileSync(resolve(Bootstrap.pristineDatabaseLocation), resolve(Bootstrap.databasePath));
+            copyFileSync(Bootstrap.pristineDatabaseLocation, Bootstrap.databasePath);
         }
     }
 
