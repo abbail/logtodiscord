@@ -6,7 +6,7 @@ import csv from 'csv-parser';
 
 export class Bootstrap {
     private database: Database;
-    public static readonly pristineDatabaseLocation = resolve(__dirname, 'data-pristine.db');
+    public static readonly defaultDatabaseLocation = resolve(__dirname, 'data-default.db');
     public static readonly databasePath = resolve(__dirname, 'data.db');
 
     constructor() {
@@ -19,8 +19,8 @@ export class Bootstrap {
 
     installDatabase() {
         if (!existsSync(Bootstrap.databasePath)) {
-            console.log('User database doesn\'t exist.  Using the pristine database.');
-            copyFileSync(Bootstrap.pristineDatabaseLocation, Bootstrap.databasePath);
+            console.log('User database doesn\'t exist.  Using the default database.');
+            copyFileSync(Bootstrap.defaultDatabaseLocation, Bootstrap.databasePath);
         }
     }
 
@@ -48,7 +48,7 @@ export class Bootstrap {
     insertItems() {
         this.database.serialize(() => {
             const statement = this.database.prepare("INSERT INTO items VALUES (?)");
-            // TODO: eventually this should use the pristine database since we are shipping this data twice
+            // TODO: eventually this should use the default database since we are shipping this data twice
             createReadStream('app/items.csv').pipe(csv())
             .on('data', (row: any) => {
                 statement.run(row.name);
