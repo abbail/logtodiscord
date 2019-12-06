@@ -1,7 +1,6 @@
 import { Database } from "sqlite3";
 import { resolve } from "path";
 import { createReadStream, existsSync, copyFileSync } from 'fs';
-import * as fs from 'fs';
 import csv from 'csv-parser';
 
 export class Bootstrap {
