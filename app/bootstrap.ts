@@ -1,8 +1,6 @@
 import { Database } from "sqlite3";
 import { resolve } from "path";
-import { createReadStream, existsSync, copyFileSync } from 'fs';
-import * as fs from 'fs';
-import csv from 'csv-parser';
+import { existsSync, copyFileSync } from 'fs';
 
 export class Bootstrap {
     private database: Database;
@@ -38,7 +36,7 @@ export class Bootstrap {
             this.database.all("SELECT COUNT(*) AS count FROM items", (err, rows) => {
                 // if there aren't any items in the table
                 if (rows[0].count === 0) {
-                    console.log('Database is missing items.  Reading items.csv.');
+                    console.log('Database is missing items.  Reading them from default database.');
                     this.insertItems();
                 }
             });
@@ -46,19 +44,33 @@ export class Bootstrap {
     }
 
     insertItems() {
-        this.database.serialize(() => {
-            const statement = this.database.prepare("INSERT INTO items VALUES (?)");
-            // TODO: eventually this should use the default database since we are shipping this data twice
-            createReadStream('app/items.csv').pipe(csv())
-            .on('data', (row: any) => {
-                statement.run(row.name);
-            })
-            .on('end', () => {
-                console.log('Done parsing items csv.  Inserting items.  This may take a minute...');
-                statement.finalize(() => {
-                    console.log('Done inserting items.');
+        this.getDefaultItems().then((items) => {
+            this.database.serialize(() => {
+                const statement = this.database.prepare("INSERT INTO items VALUES (?)");
+                for(const item of items) {
+                    statement.run(item);
+                }
+                console.log('Items imported.');
+            });
+        });
+    }
+
+    getDefaultItems() {
+        const defaultDatabase = new Database(resolve(Bootstrap.defaultDatabaseLocation));
+
+        const promise = new Promise<string[]>((resolvePromise) => {
+            const items: string[] = [];
+            defaultDatabase.serialize(() => {
+                defaultDatabase.all("SELECT name FROM items", (err, rows) => {
+                    for (const row of rows) {
+                        items.push(row.name);
+                    }
+                    resolvePromise(items);
+                    defaultDatabase.close();
                 });
             });
         });
+
+        return promise;
     }
 }
