@@ -66,7 +66,7 @@ export class SQLManager {
 
     removeWatch(watch: Watch) {
         this.database.serialize(() => {
-            const statement = this.database.prepare("DELETE FROM auctionWatches WHERE discordId=? AND watchedText=? AND type=?");
+            const statement = this.database.prepare("DELETE FROM auctionWatches WHERE discordId=? AND watchedText=? AND type=? COLLATE NOCASE");
             statement.run(watch.discordId, watch.watchText, watch.type);
             statement.finalize();
 
