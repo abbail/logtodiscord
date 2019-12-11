@@ -13,6 +13,10 @@ export class ChatManager {
         this.client = new Client();
         // log in with the token
         this.client.login(token);
+
+        this.client.on('ready', () => {
+            this.broadcastMessage('I am now online @everyone');
+        });
     }
 
     handleMessage(message: Message) {
