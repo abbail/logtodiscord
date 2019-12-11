@@ -24,8 +24,11 @@ export class LogManager {
     }
 
     public handleNewLogLine(logLine: string) {
-        // send the log entry to everyone who is subscribed
-        this.logStream.next(new LogEntry(logLine));
+        // don't process blank log lines
+        if(logLine.length) {
+            // send the log entry to everyone who is subscribed
+            this.logStream.next(new LogEntry(logLine));
+        }
     }
 
     private readFileLastLine(fileName: string, fileSize: number) {
