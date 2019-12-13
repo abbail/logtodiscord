@@ -1,8 +1,8 @@
 import { Client, TextChannel, Message, RichEmbed, User } from 'discord.js';
-import { DiscordDecoder } from './discord-decoder';
-import { Watch } from './watch';
 import { SQLManager } from './sql-manager';
-import { WatchType } from './models/watch-type';
+import { CommandType } from './models/command-type';
+import { ChatCommand } from './chat-command';
+import { AuctionType } from './models/auction-type';
 
 export class ChatManager {
     // discord.js client
@@ -13,64 +13,44 @@ export class ChatManager {
         this.client = new Client();
         // log in with the token
         this.client.login(token);
-
-        this.client.on('ready', () => {
-            this.broadcastMessage('I am now online @everyone');
-        });
     }
 
-    handleMessage(message: Message) {
-        // ignore your own messages
-        if (message.author.id !== this.client.user.id) {
-            const watch = DiscordDecoder.messageToWatch(message);
-            const errorMessage = 'Invalid statement.  Example watch:\nwatch WTS Stein of Maggok';
-
-            if (watch !== null) {
-                // if it's a subscribe
-                if (DiscordDecoder.isWatch(message.content)) {
-                    return this.handleWatch(watch);
-                // if it's an ubsubscribe
-                } else if (DiscordDecoder.isUnwatch(message.content)) {
-                    return this.handleUnwatch(watch);
-                // what is this?
-                } else {
-                    console.error(errorMessage);
-                    this.sendUserMessage(message.author.id, errorMessage);
-                    return;
-                }
-            // if it is a list watch
-            } else if (DiscordDecoder.isListWatch(message.content)) {
-                this.handleListWatch(message.author);
-                return;
-            } else {
-                console.debug('Discord message seen that didn\'t look like a watch.');
-            }
+    handleChatCommand(chatCommand: ChatCommand) {
+        switch(chatCommand.type) {
+            case CommandType.WatchBuy:
+            case CommandType.WatchSell:
+                this.handleWatch(chatCommand);
+                break;
+            case CommandType.UnwatchBuy:
+            case CommandType.UnwatchSell:
+                this.handleUnwatch(chatCommand);
+                break;
+            case CommandType.ListWatch:
+                this.handleListWatch(chatCommand.name, chatCommand.discordId);
+                break;
         }
     }
 
-    private handleListWatch(user: User) {
-        console.debug('Listing ' + user.username + '\'s watches');
-        this.sqlManager.getWatchByDiscordId(user.id).then((watches)=>{
+    private handleListWatch(username: string, discordId: string) {
+        console.debug('Listing ' + username + '\'s watches');
+        this.sqlManager.getWatchByDiscordId(discordId).then((watches)=>{
             let message = 'You are watching:\n';
             for (const watch of watches) {
-                const type = ChatManager.auctionTypeToDescription(watch.type);
+                const type = ChatManager.commandTypeToDescription(watch.type as AuctionType);
                 message += type + ' ' + watch.watchText + '\n';
             }
-            this.sendUserMessage(user.id, message);
+            this.sendUserMessage(discordId, message);
         });
     }
 
-    private handleWatch(watch: Watch) {
-        console.debug('Subscribing ' + watch.name + ' to ' + watch.watchText);
-        this.sendUserMessage(watch.discordId, 'Subscribing you to ' + watch.watchText);
-        return watch;
+    private handleWatch(chatCommand: ChatCommand) {
+        console.debug('Subscribing ' + chatCommand.name + ' to ' + chatCommand.watchText);
+        this.sendUserMessage(chatCommand.discordId, 'Subscribing you to ' + chatCommand.watchText);
     }
 
-    private handleUnwatch(watch: Watch) {
-        console.debug('Unsubscribed ' + watch.name + ' from ' + watch.watchText);
-        this.sendUserMessage(watch.discordId, 'Unsubscribed you from ' + watch.watchText);
-        watch.negated = true;
-        return watch;
+    private handleUnwatch(chatCommand: ChatCommand) {
+        console.debug('Unsubscribed ' + chatCommand.name + ' from ' + chatCommand.watchText);
+        this.sendUserMessage(chatCommand.discordId, 'Unsubscribed you from ' + chatCommand.watchText);
     }
 
     broadcastMessage(message: string | RichEmbed) {
@@ -95,18 +75,16 @@ export class ChatManager {
         });
     }
 
-    public static auctionTypeToDescription(watchType: WatchType) {
-        switch(watchType) {
-            case WatchType.Buy:
-            return "WTB";
-            case WatchType.Sell:
-            return "WTS";
-            case WatchType.Both:
-            return "Both";
-            case WatchType.Unknown:
-            return "Other";
-            default:
-            return "Unknown";
+    public static commandTypeToDescription(auctionType: AuctionType) {
+        switch(auctionType) {
+            case AuctionType.Buy:
+                return "WTB";
+            case AuctionType.Sell:
+                return "WTS";
+            case AuctionType.Both:
+                // return "Both";
+            case AuctionType.Unknown:
+                return "Unknwon";
         }
     }
 }

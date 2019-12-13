@@ -1,5 +1,5 @@
 import { AuctionPieces } from "./models/auction-pieces";
-import { WatchType } from "./models/watch-type";
+import { AuctionType } from "./models/auction-type";
 
 export class LogDecoder {
     // used to pull out the timestamp
@@ -34,7 +34,7 @@ export class LogDecoder {
     public static getAuctionPieces(message: string) {
         const matches = message.match(this.auctionRegExp);
         const auctionPieces: AuctionPieces = {
-            type: WatchType.Unknown,
+            type: AuctionType.Unknown,
             auctioneer: '',
             body: ''
         };
@@ -57,20 +57,20 @@ export class LogDecoder {
 
     public static getAuctionType(message: string) {
         let wasBuy = false;
-        let auctionType: WatchType = WatchType.Unknown;
+        let auctionType: AuctionType = AuctionType.Unknown;
 
         if (this.buyingRegExp.test(message)) {
             wasBuy = true;
-            auctionType = WatchType.Buy;
+            auctionType = AuctionType.Buy;
         }
 
         if (this.sellingRegExp.test(message)) {
-            auctionType = WatchType.Sell;
+            auctionType = AuctionType.Sell;
         }
 
         // it is both a buy and a sell
-        if (wasBuy && auctionType === WatchType.Sell) {
-            auctionType = WatchType.Both;
+        if (wasBuy && auctionType === AuctionType.Sell) {
+            auctionType = AuctionType.Both;
         }
 
         return auctionType;

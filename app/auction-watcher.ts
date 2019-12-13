@@ -4,28 +4,53 @@ import { Auction } from './auction';
 import { ChatManager } from './chat-manager';
 import { SQLManager } from './sql-manager';
 import { RichEmbed } from 'discord.js';
-import { WatchType } from './models/watch-type';
+import { AuctionType } from './models/auction-type';
+import { CommandType } from './models/command-type';
+import { ChatCommand } from './chat-command';
 
 export class AuctionWatcher {
     private items: string[] = [];
+    private chatManager: ChatManager;
 
-    constructor(private sqlManager: SQLManager, private logStream: Observable<LogEntry>, private chatManager: ChatManager) {
+    constructor(private sqlManager: SQLManager, private logStream: Observable<LogEntry>, private discordToken: string) {
+        // set up the chat manager
+        this.chatManager = new ChatManager(discordToken, sqlManager);
+
         // subscribe to the ready event
         this.chatManager.client.on('ready', () => {
             // when logged in
             console.debug('Logged in as', this.chatManager.client.user.tag);
             // begin watching the log stream
             this.watchLogStream();
+
+            // announce online
+            this.chatManager.broadcastMessage('I am now online @everyone');
         });
 
         // subscribe to messages
         this.chatManager.client.on('message', message => {
-            const watch = this.chatManager.handleMessage(message);
-            if (watch && !watch.negated) {
-                this.sqlManager.addWatch(watch);
-            } else if (watch && watch.negated) {
-                this.sqlManager.removeWatch(watch);
-            } // else it was handled in the processor
+            let chatCommand: ChatCommand;
+            // don't listen to your own messages
+            if (message.author.id !== this.chatManager.client.user.id) {
+                try {
+                    chatCommand = new ChatCommand(message);
+                } catch (e) {
+                    this.chatManager.sendUserMessage(message.author.id, e.message);
+                    return;
+                }
+            } else {
+                return;
+            }
+
+            this.chatManager.handleChatCommand(chatCommand);
+
+            if (chatCommand && (chatCommand.type === CommandType.WatchBuy || chatCommand.type === CommandType.WatchSell)) {
+                console.debug('adding watch', chatCommand.watchText);
+                this.sqlManager.addWatch(chatCommand.toWatch());
+            } else if (chatCommand && (chatCommand.type === CommandType.UnwatchBuy || chatCommand.type === CommandType.UnwatchSell)) {
+                console.debug('removing watch', chatCommand.watchText);
+                this.sqlManager.removeWatch(chatCommand.toWatch());
+            } // else no further processing is needed because no data changed
         });
 
         this.sqlManager.getItems().then(items => {
@@ -70,8 +95,12 @@ export class AuctionWatcher {
 
     getMatchingWatches(auction: Auction) {
         return this.sqlManager.watches.filter(
-            watch => auction.body.indexOf(watch.watchText) !== -1 && auction.type === watch.type
-        );
+            watch => {
+                if(auction.body.indexOf(watch.watchText) !== -1){
+                    console.log(watch, auction);
+                }
+                return auction.body.indexOf(watch.watchText) !== -1 && auction.type === watch.type;
+            });
     }
 
     getTextForAuction(auction: Auction) {
@@ -97,6 +126,7 @@ export class AuctionWatcher {
 
     private findItemMatches(message: string) {
         const itemMatches: string[] = [];
+
         for(const item of this.items) {
             if (message.indexOf(item) !== -1) {
                 itemMatches.push(item);
@@ -133,13 +163,13 @@ export class AuctionWatcher {
     getColorForAuction(auction: Auction) {
         // color by auction type
         switch (auction.type) {
-            case WatchType.Buy:
+            case AuctionType.Buy:
                 return 0x5555FF;
-            case WatchType.Sell:
+            case AuctionType.Sell:
                 return 0x55FF55;
-            case WatchType.Both:
+            case AuctionType.Both:
                 return 0x22FFFF;
-            case WatchType.Unknown:
+            case AuctionType.Unknown:
                 return 0x555555;
             default:
                 return 0xFF0000;

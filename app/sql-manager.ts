@@ -1,7 +1,6 @@
 import { Database } from "sqlite3";
-import { resolve } from "path";
-import { Watch } from "./watch";
 import { Bootstrap } from "./bootstrap";
+import { Watch } from "./models/watch";
 
 export class SQLManager {
     private database: Database;

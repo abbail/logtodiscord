@@ -1,7 +1,7 @@
-import { WatchType } from "./watch-type";
+import { AuctionType } from "./auction-type";
 
 export interface AuctionPieces {
     auctioneer: string;
     body: string;
-    type: WatchType;
+    type: AuctionType;
 }
