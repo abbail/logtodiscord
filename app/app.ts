@@ -1,5 +1,4 @@
 import { LogManager } from './log-manager';
-import { ChatManager } from './chat-manager';
 import { AuctionWatcher } from './auction-watcher';
 import { SQLManager } from './sql-manager';
 import config from '../config.json';

@@ -7,6 +7,7 @@ import { RichEmbed } from 'discord.js';
 import { AuctionType } from './models/auction-type';
 import { CommandType } from './models/command-type';
 import { ChatCommand } from './chat-command';
+import { AuctionMessage } from './auction-message';
 
 export class AuctionWatcher {
     private items: string[] = [];
@@ -80,13 +81,13 @@ export class AuctionWatcher {
         console.debug(auction.auctioneer, '-', auction.body);
 
         // the general auction announce
-        const message = this.getRichEmbedForAuction(auction);
+        const message = AuctionMessage.auctionToRichEmbed(auction, this.items);
         // const message = this.getTextForAuction(auction);
         this.chatManager.broadcastMessage(message);
 
         // notify all the watchers
         for (const match of this.getMatchingWatches(auction)) {
-            const responseMessage = this.getRichEmbedForAuction(auction);
+            const responseMessage = AuctionMessage.auctionToRichEmbed(auction, this.items);
             responseMessage.addField('Found match', match.watchText);
             this.chatManager.sendUserMessage(match.discordId, responseMessage);
         }
@@ -100,79 +101,7 @@ export class AuctionWatcher {
                     console.log(watch, auction);
                 }
                 return auction.body.indexOf(watch.watchText) !== -1 && auction.type === watch.type;
-            });
-    }
-
-    getTextForAuction(auction: Auction) {
-        return `__**${auction.auctioneer}**__ - "${auction.body}"`;
-    }
-
-    markupItems(body: string) {
-        let itemMatches: string[] = this.findItemMatches(body);
-        itemMatches = this.removeItemDuplicates(itemMatches);
-        body = this.markupMatches(body, itemMatches);
-        return body;
-    }
-
-    private markupMatches(body: string, matches: string[]) {
-        for (const match of matches) {
-            body = body.replace(
-                match,
-                `[${match}](https://wiki.project1999.com/index.php?title=Special%3ASearch&search=${encodeURI(match)}&go=Go)`
-            );
-        }
-        return body;
-    }
-
-    private findItemMatches(message: string) {
-        const itemMatches: string[] = [];
-
-        for(const item of this.items) {
-            if (message.indexOf(item) !== -1) {
-                itemMatches.push(item);
             }
-        }
-        return itemMatches;
-    }
-
-    private removeItemDuplicates(itemMatches: string[]) {
-        return itemMatches.filter((match, index, matches) => {
-            for(let i = 0; i < matches.length; i++) {
-                if (index !== i && matches[i].indexOf(match) !== -1) {
-                    return false;
-                }
-            }
-            return true;
-        });
-    }
-
-    getRichEmbedForAuction(auction: Auction) {
-        // create a RichEmbed message so we can color code it and get fancy
-        const richEmbed = new RichEmbed();
-        // set the title to who sent the auction
-        richEmbed.setTitle('__**' + auction.auctioneer + '**__');
-        // and the description as the body
-        richEmbed.setDescription(this.markupItems(auction.body));
-
-        // color by auction type
-        richEmbed.setColor(this.getColorForAuction(auction));
-
-        return richEmbed;
-    }
-
-    getColorForAuction(auction: Auction) {
-        // color by auction type
-        switch (auction.type) {
-            case AuctionType.Buy:
-                return 0x5555FF;
-            case AuctionType.Sell:
-                return 0x55FF55;
-            case AuctionType.Both:
-                return 0x22FFFF;
-            case AuctionType.Unknown:
-                return 0x555555;
-            default:
-                return 0xFF0000;
-        }
+        );
     }
 }
