@@ -1,7 +1,7 @@
 import { LogDecoder } from "./log-decoder";
 import { Message } from "discord.js";
 import { Watch } from "./watch";
-import { AuctionType } from "./models/auction-type";
+import { WatchType } from "./models/watch-type";
 
 export class DiscordDecoder {
     // used to detech the type of message we received (watch)
@@ -11,11 +11,11 @@ export class DiscordDecoder {
     private static watchStringRegExp: RegExp = /^(?:watch|unwatch)\s(?:WTS|sell|selling|WTB|buy|buying)\s(.+)$/i;
 
     public static messageToWatch(message: Message) {
-        let type = AuctionType.Other;
+        let type = WatchType.Unknown;
         if (this.isBuy(message.content)) {
-            type = AuctionType.Buy;
+            type = WatchType.Buy;
         } else if (this.isSell(message.content)) {
-            type = AuctionType.Sell;
+            type = WatchType.Sell;
         } else {
             // something went wrong
             console.error(message.content);

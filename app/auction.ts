@@ -1,12 +1,12 @@
 import { LogEntry } from "./log-entry";
 import { LogDecoder } from "./log-decoder";
 import { AuctionPieces } from "./models/auction-pieces";
-import { AuctionType } from "./models/auction-type";
+import { WatchType } from "./models/watch-type";
 
 export class Auction extends LogEntry implements AuctionPieces {
     body = '';
     auctioneer = '';
-    type: AuctionType = AuctionType.Other;
+    type: WatchType = WatchType.Unknown;
 
     constructor(logLine: string) {
         super(logLine);

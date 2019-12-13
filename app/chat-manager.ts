@@ -2,7 +2,7 @@ import { Client, TextChannel, Message, RichEmbed, User } from 'discord.js';
 import { DiscordDecoder } from './discord-decoder';
 import { Watch } from './watch';
 import { SQLManager } from './sql-manager';
-import { AuctionType } from './models/auction-type';
+import { WatchType } from './models/watch-type';
 
 export class ChatManager {
     // discord.js client
@@ -95,15 +95,15 @@ export class ChatManager {
         });
     }
 
-    public static auctionTypeToDescription(auctionType: AuctionType) {
-        switch(auctionType) {
-            case AuctionType.Buy:
+    public static auctionTypeToDescription(watchType: WatchType) {
+        switch(watchType) {
+            case WatchType.Buy:
             return "WTB";
-            case AuctionType.Sell:
+            case WatchType.Sell:
             return "WTS";
-            case AuctionType.Both:
+            case WatchType.Both:
             return "Both";
-            case AuctionType.Other:
+            case WatchType.Unknown:
             return "Other";
             default:
             return "Unknown";

@@ -4,7 +4,7 @@ import { Auction } from './auction';
 import { ChatManager } from './chat-manager';
 import { SQLManager } from './sql-manager';
 import { RichEmbed } from 'discord.js';
-import { AuctionType } from './models/auction-type';
+import { WatchType } from './models/watch-type';
 
 export class AuctionWatcher {
     private items: string[] = [];
@@ -133,13 +133,13 @@ export class AuctionWatcher {
     getColorForAuction(auction: Auction) {
         // color by auction type
         switch (auction.type) {
-            case AuctionType.Buy:
+            case WatchType.Buy:
                 return 0x5555FF;
-            case AuctionType.Sell:
+            case WatchType.Sell:
                 return 0x55FF55;
-            case AuctionType.Both:
+            case WatchType.Both:
                 return 0x22FFFF;
-            case AuctionType.Other:
+            case WatchType.Unknown:
                 return 0x555555;
             default:
                 return 0xFF0000;
