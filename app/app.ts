@@ -16,10 +16,10 @@ bootstrap.run().then(error => {
   const auctionWatcher: AuctionWatcher = new AuctionWatcher(sqlManager, logManager.logStream, config.token);
   console.debug("Preparing to log in...");
 
-  /*
+
   setTimeout(() => {
-    logManager.handleNewLogLine('[Wed Nov 27 10:53:58 2019] Tester auctions, \'WTB Brazen Brass Kilij or some junk.  Staff of Writhing, Cloak of Flames, Bronze Dagger\'');
-  }, 1500);
-  */
+    logManager.handleNewLogLine('[Wed Nov 27 10:53:58 2019] Tester auctions, \'WTS Brazen Brass Kilij or some junk.  Staff of Writhing, Cloak of Flames, Bronze Dagger\'');
+  }, 2500);
+
 });
 

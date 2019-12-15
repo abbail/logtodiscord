@@ -7,5 +7,6 @@ export enum CommandType {
     IgnoreBuy = 5,
     IgnoreSell = 6,
     IgnoreAuctioneer = 7,
-    Unknown = 8
+    UnignoreAuctioneer = 8,
+    Unknown = 9
 }

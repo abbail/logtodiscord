@@ -13,7 +13,7 @@ export class Bootstrap {
 
     private installDatabase() {
         if (!existsSync(Bootstrap.databasePath)) {
-            console.log('User database doesn\'t exist.  Using the default database.  This may take a minute.');
+            console.info('User database doesn\'t exist.  Using the default database.  This may take a minute.');
             copyFileSync(Bootstrap.defaultDatabaseLocation, Bootstrap.databasePath);
         }
     }
@@ -38,7 +38,7 @@ export class Bootstrap {
                 Bootstrap.database.all("SELECT COUNT(*) AS count FROM items", (err, rows) => {
                     // if there aren't any items in the table
                     if (rows[0].count === 0) {
-                        console.log('Database is missing items.  Reading them from default database.');
+                        console.warn('Database is missing items.  Reading them from default database.');
                         this.insertItems().then((error) => {
                             resolvePromise(error);
                         });
@@ -62,7 +62,7 @@ export class Bootstrap {
 
                     statement.finalize((err: Error) => {
                         resolvePromise(err);
-                        console.log('Items imported.');
+                        console.info('Items imported.');
                     });
                 });
             });

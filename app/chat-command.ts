@@ -3,16 +3,20 @@ import { CommandType } from "./models/command-type";
 import { LogDecoder } from "./log-decoder";
 import { Watch } from "./models/watch";
 import { AuctionType } from "./models/auction-type";
+import { Ignore } from "./models/ignore";
 
 export class ChatCommand extends Watch {
-    private watchStringRegExp: RegExp = /^(?:watch|unwatch|ignore)\s(?:WTS|sell|selling|WTB|buy|buying|person|match)\s(.+)$/i;
+    private watchCommandRegExp: RegExp = /^(?:watch|unwatch)\s(?:WTS|sell|selling|WTB|buy|buying)\s(.+)$/i;
+    private ignoreAuctioneerCommandRegExp: RegExp = /^(?:ignore|unignore)\s(?:person|player|auctioneer)\s(.+)$/i;
     private watchRegExp: RegExp = /^watch\s/i;
     private listWatchRegExp: RegExp = /^list watch$/i;
     private unwatchRegExp: RegExp = /^unwatch\s/i;
+    private ignoreRegExp: RegExp = /^ignore\s/i;
+    private unignoreRegExp: RegExp = /^unignore\s/i;
 
     constructor(message: Message) {
         super(message.author.id, message.author.username, '', CommandType.Unknown);
-        this.watchText = this.getWatchString(message.content);
+        this.text = this.getWatchString(message.content);
         this.type = this.getCommandType(message.content);
     }
 
@@ -24,20 +28,30 @@ export class ChatCommand extends Watch {
             watchType = AuctionType.Sell;
         }
 
-        return new Watch(this.discordId, this.name, this.watchText, watchType);
+        return new Watch(this.discordId, this.name, this.text, watchType);
+    }
+
+    toIgnore() {
+        return new Ignore(this.discordId, this.name, this.text, CommandType.IgnoreAuctioneer);
     }
 
     private getWatchString(message: string) {
         // run the regex on the body
-        const results = message.match(this.watchStringRegExp);
+        const watchCommandResults = message.match(this.watchCommandRegExp);
+
         // if there are results
-        if (results !== null && results.length > 1) {
+        if (watchCommandResults !== null && watchCommandResults.length > 1) {
             // grab the capture group string
-            return results[1];
+            return watchCommandResults[1];
         } else {
-            // something went wrong
-            console.error(message);
-            return '';
+            const ignoreCommandResults = message.match(this.ignoreAuctioneerCommandRegExp);
+            if(ignoreCommandResults !== null && ignoreCommandResults.length > 1) {
+                return ignoreCommandResults[1];
+            } else {
+                // something went wrong
+                console.error(message);
+                return '';
+            }
         }
     }
 
@@ -52,6 +66,14 @@ export class ChatCommand extends Watch {
 
         if (this.isListWatch(message)) {
             return CommandType.ListWatch;
+        }
+
+        if (this.isIgnore(message)) {
+            return CommandType.IgnoreAuctioneer;
+        }
+
+        if (this.isUnignore(message)) {
+            return CommandType.UnignoreAuctioneer;
         }
 
         throw new Error('Invalid Command Type.');
@@ -75,6 +97,14 @@ export class ChatCommand extends Watch {
 
     private isUnwatch(message: string) {
         return this.unwatchRegExp.test(message);
+    }
+
+    private isIgnore(message: string) {
+        return this.ignoreRegExp.test(message);
+    }
+
+    private isUnignore(message: string) {
+        return this.unignoreRegExp.test(message);
     }
 
     private isBuy(message: string) {

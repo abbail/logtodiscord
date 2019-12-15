@@ -28,6 +28,10 @@ export class ChatManager {
             case CommandType.ListWatch:
                 this.handleListWatch(chatCommand.name, chatCommand.discordId);
                 break;
+            case CommandType.IgnoreAuctioneer:
+                this.handleIgnoreAuctioneer(chatCommand);
+            case CommandType.UnignoreAuctioneer:
+                this.handleUnignoreAuctioneer(chatCommand);
         }
     }
 
@@ -37,20 +41,30 @@ export class ChatManager {
             let message = 'You are watching:\n';
             for (const watch of watches) {
                 const type = ChatManager.commandTypeToDescription(watch.type as AuctionType);
-                message += type + ' ' + watch.watchText + '\n';
+                message += type + ' ' + watch.text + '\n';
             }
             this.sendUserMessage(discordId, message);
         });
     }
 
+    private handleIgnoreAuctioneer(chatCommand: ChatCommand) {
+        console.debug('Ignoring ' + chatCommand.text + '\'s messages');
+        this.sendUserMessage(chatCommand.discordId, 'Ignoring ' + chatCommand.text);
+    }
+
     private handleWatch(chatCommand: ChatCommand) {
-        console.debug('Subscribing ' + chatCommand.name + ' to ' + chatCommand.watchText);
-        this.sendUserMessage(chatCommand.discordId, 'Subscribing you to ' + chatCommand.watchText);
+        console.debug('Subscribing ' + chatCommand.name + ' to ' + chatCommand.text);
+        this.sendUserMessage(chatCommand.discordId, 'Subscribing you to ' + chatCommand.text);
     }
 
     private handleUnwatch(chatCommand: ChatCommand) {
-        console.debug('Unsubscribed ' + chatCommand.name + ' from ' + chatCommand.watchText);
-        this.sendUserMessage(chatCommand.discordId, 'Unsubscribed you from ' + chatCommand.watchText);
+        console.debug('Unsubscribed ' + chatCommand.name + ' from ' + chatCommand.text);
+        this.sendUserMessage(chatCommand.discordId, 'Unsubscribed you from ' + chatCommand.text);
+    }
+
+    private handleUnignoreAuctioneer(chatCommand: ChatCommand) {
+        console.debug('Unignored ' + chatCommand.text + ' by ' + chatCommand.name);
+        this.sendUserMessage(chatCommand.discordId, 'Unignoring ' + chatCommand.text);
     }
 
     broadcastMessage(message: string | RichEmbed) {
