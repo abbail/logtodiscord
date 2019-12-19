@@ -101,14 +101,19 @@ export class AuctionWatcher {
             watch => {
                 if (auction.body.indexOf(watch.text) !== -1 && auction.type === watch.type) {
                     if(this.sqlManager.ignores.some(ignore => {
+                        return ignore.text.toLocaleLowerCase() === auction.auctioneer.toLocaleLowerCase() &&
+                            ignore.discordId === watch.discordId &&
+                            ignore.type === CommandType.IgnoreAuctioneer;
+                    })) {
+                        // the person watching this has ignored this person
                         console.info(`Not showing auction because ${auction.auctioneer} is ignored`);
-                        return ignore.text.toLocaleLowerCase() === auction.auctioneer.toLocaleLowerCase();
-                    })){
                         return false;
                     } else {
+                        // someone is watching this and it isn't ignored
                         return true;
                     }
                 } else {
+                    // not an auction anyone is interested in
                     return false;
                 }
             }
