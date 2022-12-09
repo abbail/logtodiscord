@@ -9,7 +9,7 @@
     "chokidar": "^3.3.0",
     "csv-parser": "^2.3.2",
     "discord.js": "^11.5.1",
-    "express": "^4.16.3",
+    "express": "^4.17.3",
     "read-last-lines": "^1.7.1",
     "rxjs": "^6.5.3",
     "sqlite3": "^4.1.0",
